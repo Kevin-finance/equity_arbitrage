@@ -166,9 +166,7 @@ merged_df["DJI_TTM2"] = merged_df.apply(lambda row: (contract_to_maturity(row["D
 for idx in ["SPX", "NDX", "DJI"]:
     merged_df = merged_df.dropna(subset=[f"{idx}_TTM2", f"{idx}_TTM1"])
 
-# =============================================================================
-# 5. Compute Perfect Foresight Dividends for All Indexes
-# =============================================================================
+
 # =============================================================================
 # 5. Compute Perfect Foresight Dividends for All Indexes Using Separate Contract Fields
 # =============================================================================
@@ -235,14 +233,17 @@ merged_df = merged_df.dropna(subset=["SPX_arb_spread", "NDX_arb_spread", "DJI_ar
 # =============================================================================
 # 9. Plot the Arbitrage Spreads for All Indexes from 2000 to 2021
 # =============================================================================
+
+dji_color = (255/255, 127/255, 15/255)
+
 plt.figure(figsize=(8, 6))
 plt.rcParams["font.family"] = "Times New Roman"
 plt.plot(merged_df.index, merged_df["SPX_arb_spread"], label="SPX", color="blue", linewidth=1)
-plt.plot(merged_df.index, merged_df["DJI_arb_spread"], label="DJI", color="orange", linewidth=1)
+plt.plot(merged_df.index, merged_df["DJI_arb_spread"], label="DJI", color=dji_color, linewidth=1)
 plt.plot(merged_df.index, merged_df["NDX_arb_spread"], label="NDAQ", color="green", linewidth=1)
 plt.xlabel("Dates", fontsize=14)
-plt.xlim([datetime(2009, 12, 1), datetime(2020, 3, 1)])
-plt.ylim([-58, 150])
+plt.xlim([datetime(2009, 11, 1), datetime(2020, 3, 1)])
+plt.ylim([-60, 150])
 plt.yticks(np.arange(-50, 151, 50))
 plt.gca().yaxis.set_tick_params(rotation=90, labelsize=12)
 plt.xticks(fontsize=12)
@@ -266,5 +267,7 @@ cols = [
     "DJI_arb_spread"
 ]
 
-# Give general statistics for the arbitrage spread from 2000 to 2021
-merged_df[cols].describe()
+# Give general statistics for the arbitrage spread from 2000 to 2021 where the date is set as an index
+merged_df.iloc[:2534,:][cols].describe()
+
+

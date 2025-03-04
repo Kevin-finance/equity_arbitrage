@@ -4,7 +4,7 @@
 ##########################
 
 # Exclude _data folder, since it should all be pulled automatically (unless in the manual folder)
-# /_data/*
+/_data/*
 
 # Exclude _output directory since it's should generated automatically
 /_output/*
@@ -16,6 +16,7 @@
 .env*
 # Allow example environment file
 !.env.example*
+
 
 # Other
 temp*.csv
