@@ -177,7 +177,7 @@ for idx in ["SPX", "NDX", "DJI"]:
     )
     # Compute τ₂ using the deferred contract field (i.e. the next contract)
     # We ignore the τ₁ output from this call because we want τ₂ to come entirely from the deferred contract grouping.
-    _, _, _,total_div = compute_expected_dividend(
+    _, exp_tau2, _,total_div = compute_expected_dividend(
         merged_df, div_col=f"{idx}_Div", contract_col=f"{idx}_Contract2"
     )
     merged_df[f"{idx}_exp_tau1"] = exp_tau1
@@ -242,7 +242,7 @@ plt.plot(merged_df.index, merged_df["SPX_arb_spread"], label="SPX", color="blue"
 plt.plot(merged_df.index, merged_df["DJI_arb_spread"], label="DJI", color=dji_color, linewidth=1)
 plt.plot(merged_df.index, merged_df["NDX_arb_spread"], label="NDAQ", color="green", linewidth=1)
 plt.xlabel("Dates", fontsize=14)
-plt.xlim([datetime(2009, 11, 1), datetime(2020, 3, 1)])
+plt.xlim([datetime(2009, 11, 1), datetime(2024, 1, 1)])
 plt.ylim([-60, 150])
 plt.yticks(np.arange(-50, 151, 50))
 plt.gca().yaxis.set_tick_params(rotation=90, labelsize=12)
@@ -261,13 +261,13 @@ plt.show()
 # =============================================================================
 # 10. (Optional) Inspect a Subset of the Results
 # =============================================================================
-cols = [
-    "SPX_arb_spread", 
-    "NDX_arb_spread",
-    "DJI_arb_spread"
-]
+# cols = [
+#     "SPX_arb_spread", 
+#     "NDX_arb_spread",
+#     "DJI_arb_spread"
+# ]
 
-# Give general statistics for the arbitrage spread from 2000 to 2021 where the date is set as an index
-merged_df.iloc[:2534,:][cols].describe()
+# # Give general statistics for the arbitrage spread from 2000 to 2021 where the date is set as an index
+# merged_df.iloc[:2534,:][cols].describe()
 
 
