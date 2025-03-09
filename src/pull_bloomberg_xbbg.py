@@ -4,9 +4,9 @@ import settings
 from pathlib import Path
 
 # Load constants from settings.py
-DATA_DIR = settings.DATA_DIR
-START_DATE = settings.START_DATE
-END_DATE = settings.END_DATE
+DATA_DIR = Path(config("DATA_DIR"))
+START_DATE = config("START_DATE")
+END_DATE = config("END_DATE")
 
 # Define tickers for Spot Indices
 spot_tickers = ["SPX Index", "NDX Index", "INDU Index"]
@@ -61,6 +61,8 @@ if __name__ == "__main__":
 
     # Save the results
     path = Path(DATA_DIR) / "bloomberg_historical_data.parquet"
+    print(DATA_DIR)
+    print(path)
     all_data.to_parquet(path)
 
     print(f"Historical data saved to {path}")
