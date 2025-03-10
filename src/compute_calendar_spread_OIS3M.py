@@ -286,7 +286,5 @@ plt.show()
 #     "DJI_arb_spread",
 # ]
 
-# # Give general statistics for the arbitrage spread from 2000 to 2021 where the date is set as an index
-# merged_df.iloc[:2534,:][cols].describe()
 
 

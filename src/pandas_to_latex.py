@@ -92,6 +92,6 @@ This section shows the summary statistics tables.
 if not OUTPUT_DIR.exists():
     os.makedirs(OUTPUT_DIR)
 
-# Write the LaTeX code to a file
+# Write the LaTeX code to a file in the output directory
 with open(OUTPUT_DIR / "graph_document.tex", "w", encoding="utf-8") as f:
     f.write(latex_code)
