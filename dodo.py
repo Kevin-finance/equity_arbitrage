@@ -110,9 +110,9 @@ def task_config():
     """Create empty directories for data and output if they don't exist"""
     return {
         "actions": ["ipython ./src/settings.py"],
-        "targets": [DATA_DIR, OUTPUT_DIR],
+        "targets": [str(DATA_DIR), str(OUTPUT_DIR)],
         "file_dep": ["./src/settings.py"],
-        "clean": [],
+        "clean": []
     }
 
 def task_pull_optionm_data():
