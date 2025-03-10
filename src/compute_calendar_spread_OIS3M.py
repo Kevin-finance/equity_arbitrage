@@ -6,6 +6,10 @@ import matplotlib.dates as mdates
 import calendar
 from datetime import datetime
 from pathlib import Path
+from settings import config
+
+OUTPUT_DIR = config("OUTPUT_DIR")
+
 
 # Dynamically set project root using sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -230,6 +234,20 @@ for idx in ["SPX", "NDX", "DJI"]:
 # =============================================================================
 merged_df = merged_df.dropna(subset=["SPX_arb_spread", "NDX_arb_spread", "DJI_arb_spread"])
 
+desc = merged_df.filter(items =["SPX_arb_spread", "NDX_arb_spread", "DJI_arb_spread"]).describe()
+data = desc.values.tolist()  
+col_labels = list(desc.columns)
+row_labels = list(desc.index)
+
+fig, ax = plt.subplots()
+ax.axis('tight')
+ax.axis('off')
+
+table = ax.table(cellText=data, colLabels=col_labels, rowLabels=row_labels, loc='center')
+
+plt.savefig(f'{OUTPUT_DIR}/table_full_replication.pdf')
+
+
 # =============================================================================
 # 9. Plot the Arbitrage Spreads for All Indexes from 2000 to 2021
 # =============================================================================
@@ -254,8 +272,9 @@ plt.grid(axis="y", linestyle="--", alpha=0.6)
 plt.legend(fontsize=10, loc="lower right")
 plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
-plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%-m/%-d/%Y'))
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%#m/%#d/%Y'))
 plt.tight_layout()
+plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_full_replication.pdf')
 plt.show()
 
 # =============================================================================

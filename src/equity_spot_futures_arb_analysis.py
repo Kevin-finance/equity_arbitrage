@@ -201,6 +201,19 @@ total_df['INDU_Spread'] *= 100
 # Save the final DataFrame to a Parquet file for later use
 total_df.to_parquet(f'{OUTPUT_DIR}/total_df.parquet')
 
+desc = total_df.filter(items= ['SPX_Spread', 'NDX_Spread','INDU_Spread']).describe()
+data = desc.values.tolist()  
+col_labels = list(desc.columns)
+row_labels = list(desc.index)
+
+fig, ax = plt.subplots()
+ax.axis('tight')
+ax.axis('off')
+
+table = ax.table(cellText=data, colLabels=col_labels, rowLabels=row_labels, loc='center')
+
+plt.savefig(f'{OUTPUT_DIR}/table_proxy_replication.pdf')
+
 # ------------------------------------------------------------------------------
 # 8. Plotting the Equity Index Spread
 # ------------------------------------------------------------------------------
@@ -220,7 +233,7 @@ plt.grid(True)
 plt.hlines(0, total_df.index[0], total_df.index[-1], 'r', linestyles='--', linewidth=1)
 plt.ylim(-50, 150)
 # Save the plot to a PDF file
-plt.savefig(f'{OUTPUT_DIR}/equity_index_spread.pdf')
+plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_proxy_replication.pdf')
 plt.show()
 
 # ------------------------------------------------------------------------------
