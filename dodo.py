@@ -115,6 +115,38 @@ def task_config():
         "clean": [],
     }
 
+def task_pull_optionm_data():
+    """Pull data from OptionMetrics API"""
+    file_dep = [
+        "./src/settings.py",
+        "./src/pull_optionm_api_data.py",
+    ]
+    targets = [
+        DATA_DIR / "DJX_implied_div_yield.parquet",
+        DATA_DIR / "NDX_implied_div_yield.parquet",
+        DATA_DIR / "SPX_implied_div_yield.parquet"
+    ]
+
+    return {
+        "actions": [
+            "ipython ./src/settings.py",
+            "ipython ./src/pull_optionm_api_data.py",
+        ],
+        "targets": targets,
+        "file_dep": file_dep,
+        "clean": [],
+    }
+
+# equity_spot 돌리면, save fig되고 그에따라서 latex 파일 만들수있음
+# 이거를 다시 pdf로 만들라는 얘기인듯.
+############################## 
+1. Pull request
+2. statistics in all table in the latex document automatically generated from the code? 
+
+
+##############################
+
+
 
 def task_pull_fred():
     """ """
