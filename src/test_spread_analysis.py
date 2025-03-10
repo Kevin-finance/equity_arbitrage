@@ -14,13 +14,21 @@ START_DATE = config("START_DATE")
 END_DATE = config("END_DATE")
 WRDS_USERNAME = config("WRDS_USERNAME")
 OUTPUT_DIR = config("OUTPUT_DIR")
+<<<<<<< HEAD
+=======
+MANUAL_DATA_DIR = config("MANUAL_DATA_DIR")
+>>>>>>> origin/main
 
 def test_pull_bloomberg():
     """
     Test if the bloomberg file is properly pulled with the correct columns and index"""
     
     # for now
+<<<<<<< HEAD
     df  = pd.read_parquet('../data_manual/bloomberg_historical_data.parquet')
+=======
+    df  = pd.read_parquet(MANUAL_DATA_DIR/'bloomberg_historical_data.parquet')
+>>>>>>> origin/main
     assert isinstance(df, pd.DataFrame)
 
     tuples = [
@@ -37,7 +45,11 @@ def test_pull_bloomberg():
 
 
 def test_clean_bloomberg():
+<<<<<<< HEAD
     df_raw = pd.read_parquet('../data_manual/bloomberg_historical_data.parquet')
+=======
+    df_raw = pd.read_parquet(MANUAL_DATA_DIR/'bloomberg_historical_data.parquet')
+>>>>>>> origin/main
     start_date = datetime.strftime(config("START_DATE").date()-relativedelta(years=1),format="%Y-%m-%d") 
     end_date = datetime.strftime(config("END_DATE"),format="%Y-%m-%d")
 
@@ -88,7 +100,11 @@ def test_filter_index_implied_dividend_yield():
 
 
 def test_SF_spread_correlation():
+<<<<<<< HEAD
     expected = pd.read_excel("../data_manual/spread.xlsx")
+=======
+    expected = pd.read_excel(MANUAL_DATA_DIR/"spread.xlsx")
+>>>>>>> origin/main
     check = pd.read_parquet(OUTPUT_DIR/"total_df.parquet")
     expected.set_index("date", inplace=True)
     expected.index = [expected.index[i].date() for i in range(len(expected.index))]
@@ -114,3 +130,52 @@ def test_latex_report():
         pytest.skip("No LaTeX report (.tex file) found in _output directory; skipping test.")
     # If at least one .tex file exists, the test passes
     assert len(tex_files) > 0, f"Found {len(tex_files)} .tex file(s) in _output directory."
+<<<<<<< HEAD
+=======
+
+
+def test_spread_correlation(threshold=0.8):
+    """
+    Compare the computed arbitrage spreads in 'merged_df' with expected values from 'spread.xlsx'.
+    Ensures that the computed spreads have a strong correlation (> threshold) with the expected ones.
+    """
+
+    # Load expected spread values from Excel
+    expected = pd.read_excel(MANUAL_DATA_DIR/"spread.xlsx")
+
+    # Load computed spreads from merged_df saved in a parquet file
+    check = pd.read_parquet(f"{OUTPUT_DIR}/calendar_spread_df.parquet")
+
+    # Convert 'date' column in expected data to datetime
+    expected["date"] = pd.to_datetime(expected["date"])
+
+    # Ensure the index in merged_df (check) is in datetime format
+    check.index = pd.to_datetime(check.index)
+
+    # Filter merged_df to match only dates available in spread.xlsx
+    check = check[check.index.isin(expected["date"])]
+
+    # Set expected data index for merging
+    expected.set_index("date", inplace=True)
+
+    # Merge expected vs. computed spreads for correlation check
+    ndx = pd.concat([expected["Eq_SF_NDAQ"], check["NDX_arb_spread"]], axis=1, join="inner")
+    spx = pd.concat([expected["Eq_SF_SPX"], check["SPX_arb_spread"]], axis=1, join="inner")
+    djx = pd.concat([expected["Eq_SF_Dow"], check["DJI_arb_spread"]], axis=1, join="inner")
+
+    # Compute correlation for each index
+    ndx_corr = ndx.corr().iloc[0, 1]
+    spx_corr = spx.corr().iloc[0, 1]
+    djx_corr = djx.corr().iloc[0, 1]
+
+    # Print correlation values for debugging
+    print(f"✅ Spread Correlation Results (Threshold: {threshold})")
+    print(f"  - NDX Spread Correlation: {ndx_corr:.2f}")
+    print(f"  - SPX Spread Correlation: {spx_corr:.2f}")
+    print(f"  - DJX Spread Correlation: {djx_corr:.2f}")
+
+    # Assert correlation is above the threshold
+    assert ndx_corr > threshold, f"NDX spread correlation too low: {ndx_corr:.2f}"
+    assert spx_corr > threshold, f"SPX spread correlation too low: {spx_corr:.2f}"
+    assert djx_corr > threshold, f"DJX spread correlation too low: {djx_corr:.2f}"
+>>>>>>> origin/main

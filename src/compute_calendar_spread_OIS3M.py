@@ -6,6 +6,7 @@ import matplotlib.dates as mdates
 import calendar
 from datetime import datetime
 from pathlib import Path
+<<<<<<< HEAD
 from settings import config
 
 OUTPUT_DIR = config("OUTPUT_DIR")
@@ -14,6 +15,19 @@ OUTPUT_DIR = config("OUTPUT_DIR")
 # Dynamically set project root using sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
+=======
+from decouple import config
+from settings import config
+
+# Dynamically set project root using sys.path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+# Retrieve configuration parameters: start date, end date, and output directory
+START_DATE = config("START_DATE")
+END_DATE = config("END_DATE")
+OUTPUT_DIR = config("OUTPUT_DIR")
+
+>>>>>>> origin/main
 # =============================================================================
 # 1. Load and Prepare Data
 # =============================================================================
@@ -234,6 +248,7 @@ for idx in ["SPX", "NDX", "DJI"]:
 # =============================================================================
 merged_df = merged_df.dropna(subset=["SPX_arb_spread", "NDX_arb_spread", "DJI_arb_spread"])
 
+<<<<<<< HEAD
 desc = merged_df.filter(items =["SPX_arb_spread", "NDX_arb_spread", "DJI_arb_spread"]).describe()
 data = desc.values.tolist()  
 col_labels = list(desc.columns)
@@ -248,6 +263,8 @@ table = ax.table(cellText=data, colLabels=col_labels, rowLabels=row_labels, loc=
 plt.savefig(f'{OUTPUT_DIR}/table_full_replication.pdf')
 
 
+=======
+>>>>>>> origin/main
 # =============================================================================
 # 9. Plot the Arbitrage Spreads for All Indexes from 2000 to 2021
 # =============================================================================
@@ -272,11 +289,23 @@ plt.grid(axis="y", linestyle="--", alpha=0.6)
 plt.legend(fontsize=10, loc="lower right")
 plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
+<<<<<<< HEAD
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%#m/%#d/%Y'))
 plt.tight_layout()
 plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_full_replication.pdf')
 plt.show()
 
+=======
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%-m/%-d/%Y'))
+plt.tight_layout()
+plt.savefig(f'{OUTPUT_DIR}/spread_plot_OIS3M.pdf')
+plt.show()
+
+output_file = Path(OUTPUT_DIR) / "calendar_spread_df.parquet"  # Define the file path
+merged_df.to_parquet(output_file, engine="pyarrow", index=True)
+
+
+>>>>>>> origin/main
 # =============================================================================
 # 10. (Optional) Inspect a Subset of the Results
 # =============================================================================
