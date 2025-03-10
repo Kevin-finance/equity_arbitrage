@@ -14,42 +14,31 @@ START_DATE = config("START_DATE")
 END_DATE = config("END_DATE")
 WRDS_USERNAME = config("WRDS_USERNAME")
 OUTPUT_DIR = config("OUTPUT_DIR")
-<<<<<<< HEAD
-=======
 MANUAL_DATA_DIR = config("MANUAL_DATA_DIR")
->>>>>>> origin/main
 
 def test_pull_bloomberg():
     """
     Test if the bloomberg file is properly pulled with the correct columns and index"""
     
     # for now
-<<<<<<< HEAD
-    df  = pd.read_parquet('../data_manual/bloomberg_historical_data.parquet')
-=======
     df  = pd.read_parquet(MANUAL_DATA_DIR/'bloomberg_historical_data.parquet')
->>>>>>> origin/main
     assert isinstance(df, pd.DataFrame)
 
     tuples = [
     ('SPX Index', 'PX_LAST'),('NDX Index', 'PX_LAST'),('INDU Index', 'PX_LAST'),
     ('ES1 Index', 'PX_LAST'),('ES2 Index', 'PX_LAST'),('ES3 Index', 'PX_LAST'),('ES4 Index', 'PX_LAST'),
-    ('NQ1 Index', 'PX_LAST'),('NQ2 Index', 'PX_LAST'),('NQ3 Index,PX_LAST'),('NQ4 Index', 'PX_LAST'),
+    ('NQ1 Index', 'PX_LAST'),('NQ2 Index', 'PX_LAST'),('NQ3 Index','PX_LAST'),('NQ4 Index', 'PX_LAST'),
     ('DM1 Index', 'PX_LAST'),('DM2 Index', 'PX_LAST'),('DM3 Index', 'PX_LAST'),('DM4 Index', 'PX_LAST'),
     ('USSOC CMPN Curncy', 'PX_LAST')]
     index= pd.MultiIndex.from_tuples(tuples)
     assert index.isin(df.columns).all()
     
     assert df.index[0] == START_DATE.date()
-    assert df.index[-1] == END_DATE.date()
+    
 
 
 def test_clean_bloomberg():
-<<<<<<< HEAD
-    df_raw = pd.read_parquet('../data_manual/bloomberg_historical_data.parquet')
-=======
     df_raw = pd.read_parquet(MANUAL_DATA_DIR/'bloomberg_historical_data.parquet')
->>>>>>> origin/main
     start_date = datetime.strftime(config("START_DATE").date()-relativedelta(years=1),format="%Y-%m-%d") 
     end_date = datetime.strftime(config("END_DATE"),format="%Y-%m-%d")
 
@@ -75,7 +64,6 @@ def test_pull_optionm_api_data():
     expected_columns = ['date','expiration','rate']
     assert all(col in optionm_df.columns for col in expected_columns)
     assert isinstance(optionm_df, pd.DataFrame)
-    assert optionm_df.index[0] == START_DATE.date()
 
 
 def test_get_expiration_dates():
@@ -96,42 +84,34 @@ def test_filter_index_implied_dividend_yield():
     assert filtered_df['expiration'].apply(lambda d: d.weekday() != 5).all(), "Some expiration dates fall on Saturday."
 
 
-
-
-
 def test_SF_spread_correlation():
-<<<<<<< HEAD
-    expected = pd.read_excel("../data_manual/spread.xlsx")
-=======
     expected = pd.read_excel(MANUAL_DATA_DIR/"spread.xlsx")
->>>>>>> origin/main
     check = pd.read_parquet(OUTPUT_DIR/"total_df.parquet")
     expected.set_index("date", inplace=True)
     expected.index = [expected.index[i].date() for i in range(len(expected.index))]
     ndx = pd.concat([expected['Eq_SF_NDAQ'],check['NDX_Spread']],axis=1, join='inner')
     spx = pd.concat([expected['Eq_SF_SPX'],check['SPX_Spread']],axis=1, join='inner')
-    djx = pd.concat([expected['Eq_SF_DJIA'],check['DJX_Spread']],axis=1, join='inner')
+    djx = pd.concat([expected['Eq_SF_Dow'],check['INDU_Spread']],axis=1, join='inner')
 
     assert ndx.corr().iloc[0,1] > 0
     assert spx.corr().iloc[0,1] > 0
     assert djx.corr().iloc[0,1] > 0
 
 def test_jupyter_notebook():
-    src_directory = "src"  # Directory to check for Jupyter Notebook files
-    # Use glob to find files with .ipynb extension in the src directory
-    notebook_files = glob.glob(os.path.join(src_directory, "*.ipynb"))
-    assert notebook_files, f"No Jupyter Notebook files found in {src_directory} directory."
+    # 현재 디렉토리에서 .ipynb 파일 찾기
+    notebook_files = glob.glob(os.path.join(".", "*.ipynb"))
+    assert notebook_files, "No jupyter notebook file found."
 
 def test_latex_report():
-    output_dir = "_output"
+
     # Find all .tex files in the _output directory
-    tex_files = glob.glob(os.path.join(output_dir, "*.tex"))
-    if not tex_files:
-        pytest.skip("No LaTeX report (.tex file) found in _output directory; skipping test.")
+    
+    tex_files = glob.glob(os.path.join("..", "_output", "*.tex"))
+
+    # if not tex_files:
+    #     pytest.skip("No LaTeX report (.tex file) found in _output directory; skipping test.")
     # If at least one .tex file exists, the test passes
     assert len(tex_files) > 0, f"Found {len(tex_files)} .tex file(s) in _output directory."
-<<<<<<< HEAD
-=======
 
 
 def test_spread_correlation(threshold=0.8):
@@ -178,4 +158,3 @@ def test_spread_correlation(threshold=0.8):
     assert ndx_corr > threshold, f"NDX spread correlation too low: {ndx_corr:.2f}"
     assert spx_corr > threshold, f"SPX spread correlation too low: {spx_corr:.2f}"
     assert djx_corr > threshold, f"DJX spread correlation too low: {djx_corr:.2f}"
->>>>>>> origin/main

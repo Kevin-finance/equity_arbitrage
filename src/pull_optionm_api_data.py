@@ -23,8 +23,6 @@ START_DATE = config("START_DATE")
 END_DATE = config("END_DATE")
 
 
-INDEX_LIST = ["SPX", "DJX", "NDX"]
-
 
 def pull_index_implied_dividend_yield(index_name, start_date=START_DATE, end_date=END_DATE, wrds_username=WRDS_USERNAME):
     """
@@ -81,32 +79,32 @@ def pull_index_implied_dividend_yield(index_name, start_date=START_DATE, end_dat
     df = db.raw_sql(query, date_cols=["date"])
     db.close()
 
-    # Display DataFrame info
-    print(f"\n📌 DataFrame Info for {index_name}:")
-    print(df.info())
+    # # Display DataFrame info
+    # print(f"\n📌 DataFrame Info for {index_name}:")
+    # print(df.info())
 
-    # Show first few rows
-    print(f"\n📊 First 5 Rows for {index_name}:")
-    print(df.head())
+    # # Show first few rows
+    # print(f"\n📊 First 5 Rows for {index_name}:")
+    # print(df.head())
 
-    # Show last few rows
-    print(f"\n📊 Last 5 Rows for {index_name}:")
-    print(df.tail())
+    # # Show last few rows
+    # print(f"\n📊 Last 5 Rows for {index_name}:")
+    # print(df.tail())
 
     # Save to Parquet
     save_path = Path(DATA_DIR) / f"{index_name}_implied_div_yield.parquet"
     df.to_parquet(save_path)
-    print(f"\n✅ Saved {index_name} Implied Dividend Yield to {save_path}")
+    # print(f"\n✅ Saved {index_name} Implied Dividend Yield to {save_path}")
 
-    # Plot the implied dividend yield trend
-    plt.figure(figsize=(12, 6))
-    plt.plot(df["date"], df["rate"], label=f"Implied Dividend Yield ({index_name})", color='blue')
-    plt.xlabel("Date")
-    plt.ylabel("Dividend Yield")
-    plt.title(f"{index_name} Implied Dividend Yield Over Time")
-    plt.legend()
-    plt.grid()
-    plt.show()
+    # # Plot the implied dividend yield trend
+    # plt.figure(figsize=(12, 6))
+    # plt.plot(df["date"], df["rate"], label=f"Implied Dividend Yield ({index_name})", color='blue')
+    # plt.xlabel("Date")
+    # plt.ylabel("Dividend Yield")
+    # plt.title(f"{index_name} Implied Dividend Yield Over Time")
+    # plt.legend()
+    # plt.grid()
+    # plt.show()
 
     return df
 
@@ -124,11 +122,11 @@ def load_index_implied_dividend_yield(index_name, data_dir=DATA_DIR):
     """
     path = Path(data_dir) / f"{index_name}_implied_div_yield.parquet"
     df = pd.read_parquet(path)
-    print(f"\n📌 Loaded DataFrame Info for {index_name}:")
-    print(df.info())
+    # print(f"\n📌 Loaded DataFrame Info for {index_name}:")
+    # print(df.info())
 
-    print(f"\n📊 First 5 Rows for {index_name} (Loaded from Parquet):")
-    print(df.head())
+    # print(f"\n📊 First 5 Rows for {index_name} (Loaded from Parquet):")
+    # print(df.head())
 
     return df
 
@@ -215,7 +213,11 @@ def _demo():
 
 
 if __name__ == "__main__":
-    _demo()
+    INDEX_LIST = ["SPX", "DJX", "NDX"]
+    for index_name in INDEX_LIST:
+        df_div_yield = pull_index_implied_dividend_yield(
+            index_name, start_date=START_DATE, end_date=END_DATE
+        )
     
 
 

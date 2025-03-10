@@ -17,7 +17,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 # =============================================================================
 # 1. Load and Prepare Data
 # =============================================================================
-file_path = Path(__file__).resolve().parent.parent / "_data/bloomberg_historical_data.parquet"
+file_path = Path(__file__).resolve().parent.parent / "data_manual/bloomberg_historical_data.parquet"
 df = pd.read_parquet(file_path)
 # Ensure columns are named properly (if MultiIndex)
 if isinstance(df.columns, pd.MultiIndex):
