@@ -42,14 +42,23 @@ This section shows the Equity Index Spread plots.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{equity_index_spread_plot_full_replication.pdf}
-    \caption{Equity Index Spread - Full Replication}
+    \includegraphics[width=0.8\textwidth]{equity_index_spread_plot_replication.pdf}
+    \caption{Equity Index Spread - Replication}
     \label{fig:spread_full}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{equity_index_spread_plot_proxy.pdf}
+    \includegraphics[width=0.8\textwidth]{equity_index_spread_plot_full_replication.pdf}
+    \caption{Equity Index Spread - Full Replication up to 2024}
+    \label{fig:spread_full}
+\end{figure}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{equity_index_spread_plot_proxy_replication.pdf}
     \caption{Equity Index Spread - Proxy Replication}
     \label{fig:spread_proxy}
 \end{figure}

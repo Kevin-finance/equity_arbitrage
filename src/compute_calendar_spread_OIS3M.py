@@ -7,7 +7,8 @@ import calendar
 from datetime import datetime
 from pathlib import Path
 from settings import config
-
+import matplotlib
+print(matplotlib.get_backend())
 OUTPUT_DIR = config("OUTPUT_DIR")
 
 
@@ -246,10 +247,10 @@ ax.axis('off')
 table = ax.table(cellText=data, colLabels=col_labels, rowLabels=row_labels, loc='center')
 
 plt.savefig(f'{OUTPUT_DIR}/table_full_replication.pdf')
-
+merged_df.index = pd.to_datetime(merged_df.index)
 
 # =============================================================================
-# 9. Plot the Arbitrage Spreads for All Indexes from 2000 to 2021
+# 9. Plot the Arbitrage Spreads for All Indexes from 2000 to 2024 to get up-to-date spread & 2000 to 2021 for the replication
 # =============================================================================
 
 dji_color = (255/255, 127/255, 15/255)
@@ -272,10 +273,37 @@ plt.grid(axis="y", linestyle="--", alpha=0.6)
 plt.legend(fontsize=10, loc="lower right")
 plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
-plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%#m/%#d/%Y'))
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 plt.tight_layout()
 plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_full_replication.pdf')
-plt.show()
+
+
+merged_df.to_parquet(OUTPUT_DIR / "calendar_spread_df.parquet", engine="pyarrow")
+
+
+plt.figure(figsize=(8, 6))
+plt.rcParams["font.family"] = "Times New Roman"
+plt.plot(merged_df.index, merged_df["SPX_arb_spread"], label="SPX", color="blue", linewidth=1)
+plt.plot(merged_df.index, merged_df["DJI_arb_spread"], label="DJI", color=dji_color, linewidth=1)
+plt.plot(merged_df.index, merged_df["NDX_arb_spread"], label="NDAQ", color="green", linewidth=1)
+plt.xlabel("Dates", fontsize=14)
+plt.xlim([datetime(2009, 11, 1), datetime(2021, 3, 1)])
+plt.ylim([-60, 150])
+plt.yticks(np.arange(-50, 151, 50))
+plt.gca().yaxis.set_tick_params(rotation=90, labelsize=12)
+plt.xticks(fontsize=12)
+plt.gca().xaxis.set_major_locator(mdates.YearLocator(2))
+plt.ylabel("Arbitrage Spread (bps)", fontsize=14)
+plt.title("(c) Equity-Spot Futures", fontsize=14)
+plt.grid(axis="y", linestyle="--", alpha=0.6)
+plt.legend(fontsize=10, loc="lower right")
+plt.gca().spines["top"].set_visible(False)
+plt.gca().spines["right"].set_visible(False)
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+plt.tight_layout()
+plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_replication.pdf')
+
+
 
 # =============================================================================
 # 10. (Optional) Inspect a Subset of the Results

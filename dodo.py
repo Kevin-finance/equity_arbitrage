@@ -152,7 +152,8 @@ def task_SF_proxy_analysis():
         str(OUTPUT_DIR / "table_proxy_replication.pdf"),
         str(OUTPUT_DIR / "yearly_comparison.pdf"),
         str(OUTPUT_DIR / "table_full_replication.pdf"),
-        str(OUTPUT_DIR / "equity_index_spread_plot_full_replication.pdf")
+        str(OUTPUT_DIR / "equity_index_spread_plot_full_replication.pdf"),
+        str(OUTPUT_DIR / "equity_index_spread_plot_replication.pdf")
     ]
 
     return {
@@ -167,8 +168,17 @@ def task_SF_proxy_analysis():
     }
 
 
-def task_latex_documnets():
-    """Creates the LaTeX documents for the SF project"""
+import os
+from pathlib import Path
+
+# Define paths
+TEX_FILE = OUTPUT_DIR / "graph_document.tex"
+PDF_FILE = OUTPUT_DIR / "graph_document.pdf"
+TXT_FILE = OUTPUT_DIR / "graph_document.txt"
+
+def task_latex_documents():
+    """Creates the LaTeX documents for the SF project and converts to PDF & TXT."""
+    
     file_dep = [
         "./src/settings.py",
         "./src/pull_optionm_api_data.py",
@@ -177,18 +187,18 @@ def task_latex_documnets():
         "./src/compute_calendar_spread_OIS3M.py",
         "./src/pandas_to_latex.py"
     ]
-    targets = [
-        str(OUTPUT_DIR / "graph_document.tex")
-    ]
 
     return {
         "actions": [
-            "ipython ./src/pandas_to_latex.py"
+            "ipython ./src/pandas_to_latex.py",  # Generate LaTeX file
+            f"pdflatex -interaction=nonstopmode -shell-escape -output-directory={OUTPUT_DIR} {TEX_FILE}",  # Compile to PDF
+            f"cat {TEX_FILE} > {TXT_FILE}"  # Convert to TXT
         ],
-        "targets": targets,
+        "targets": [str(TEX_FILE), str(PDF_FILE), str(TXT_FILE)],
         "file_dep": file_dep,
-        "clean": [f"del {target}" for target in targets],
+        "clean": [f"del {TEX_FILE}", f"del {PDF_FILE}", f"del {TXT_FILE}"],
     }
+
 
 
 
