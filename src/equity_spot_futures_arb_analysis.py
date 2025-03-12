@@ -19,11 +19,13 @@ import matplotlib.pyplot as plt
 # Load raw Bloomberg historical data from a Parquet file
 import os
 import pandas as pd
+from settings import config
 
+MANUAL_DATA_DIR = config("MANUAL_DATA_DIR")
 # Set the path to the Bloomberg historical data file
 root_path = os.getcwd()
 # data_path = os.path.join(root_path, 'data_manual', 'bloomberg_historical_data.parquet')
-data_path = "../data_manual/bloomberg_historical_data.parquet"
+data_path = MANUAL_DATA_DIR / 'bloomberg_historical_data.parquet'
 df_raw = pd.read_parquet(data_path)
 
 # Retrieve configuration parameters: start date, end date, and output directory
