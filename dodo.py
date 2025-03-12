@@ -168,9 +168,6 @@ def task_SF_proxy_analysis():
     }
 
 
-import os
-from pathlib import Path
-
 # Define paths
 TEX_FILE = OUTPUT_DIR / "graph_document.tex"
 PDF_FILE = OUTPUT_DIR / "graph_document.pdf"
@@ -192,25 +189,17 @@ def task_latex_documents():
         "actions": [
             "ipython ./src/pandas_to_latex.py",  # Generate LaTeX file
             f"pdflatex -interaction=nonstopmode -shell-escape -output-directory={OUTPUT_DIR} {TEX_FILE}",  # Compile to PDF
-            f"cat {TEX_FILE} > {TXT_FILE}"  # Convert to TXT
+            f"type {TEX_FILE} > {TXT_FILE}"  # Convert to TXT / Works for windows
         ],
         "targets": [str(TEX_FILE), str(PDF_FILE), str(TXT_FILE)],
         "file_dep": file_dep,
         "clean": [f"del {TEX_FILE}", f"del {PDF_FILE}", f"del {TXT_FILE}"],
+        
     }
 
 
 
 
-
-# # equity_spot 돌리면, save fig되고 그에따라서 latex 파일 만들수있음
-# # 이거를 다시 pdf로 만들라는 얘기인듯.
-# ############################## 
-
-# 2. statistics in all table in the latex document automatically generated from the code? 
-
-
-##############################
 
 
 

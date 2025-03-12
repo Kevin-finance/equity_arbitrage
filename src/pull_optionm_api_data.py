@@ -6,15 +6,16 @@ Functions to pull and store implied dividend yields for SPX (S&P 500), DJX (Dow 
 
 """
 
-from datetime import datetime
+# from datetime import datetime
 from pathlib import Path
-import pandas as pd
-import wrds
-import matplotlib.pyplot as plt
-from settings import config
 
-from dateutil.relativedelta import relativedelta
+# import matplotlib.pyplot as plt
+import pandas as pd
 import pandas_market_calendars as mcal
+import wrds
+
+
+from settings import config
 
 # Load configuration from settings or environment variables
 DATA_DIR = Path(config("DATA_DIR"))
@@ -23,11 +24,12 @@ START_DATE = config("START_DATE")
 END_DATE = config("END_DATE")
 
 
-
-def pull_index_implied_dividend_yield(index_name, start_date=START_DATE, end_date=END_DATE, wrds_username=WRDS_USERNAME):
+def pull_index_implied_dividend_yield(
+    index_name, start_date=START_DATE, end_date=END_DATE, wrds_username=WRDS_USERNAME
+):
     """
     Pulls implied dividend yield for a given index from WRDS (OptionMetrics `optionm.idxdvd`).
-    
+
     Parameters:
     - index_name (str): Name of the index (SPX, DJX, NDX)
     - secid (int): SECID corresponding to the index
@@ -72,7 +74,6 @@ def pull_index_implied_dividend_yield(index_name, start_date=START_DATE, end_dat
     ORDER BY date ASC;
 
     """
-      
 
     # Connect to WRDS and fetch data
     db = wrds.Connection(wrds_username=wrds_username)
@@ -112,7 +113,7 @@ def pull_index_implied_dividend_yield(index_name, start_date=START_DATE, end_dat
 def load_index_implied_dividend_yield(index_name, data_dir=DATA_DIR):
     """
     Loads the saved implied dividend yield data for a given index from Parquet.
-    
+
     Parameters:
     - index_name (str): Name of the index (SPX, INDU, NDX)
     - data_dir (Path): Directory where Parquet file is stored
@@ -130,7 +131,10 @@ def load_index_implied_dividend_yield(index_name, data_dir=DATA_DIR):
 
     return df
 
-def get_expiration_dates(start_date: str, end_date: str, expiration_months: list, freq = 'WOM-3FRI') -> list:
+
+def get_expiration_dates(
+    start_date: str, end_date: str, expiration_months: list, freq="WOM-3FRI"
+) -> list:
     """
     OptionMetrics expiration dates are saved as the day after the third Friday before or around 2017
     Thus, we need to both check the third Friday and the next day to get the expiration date
@@ -138,14 +142,18 @@ def get_expiration_dates(start_date: str, end_date: str, expiration_months: list
     """
 
     # Get all third fridays in the date range
-    all_target_dates = pd.date_range(start=start_date, end=end_date, freq= freq)
+    all_target_dates = pd.date_range(start=start_date, end=end_date, freq=freq)
     # Get all third fridays that are in the expiration months
-    expiration_target_dates= all_target_dates[all_target_dates.month.isin(expiration_months)]
-    
+    expiration_target_dates = all_target_dates[
+        all_target_dates.month.isin(expiration_months)
+    ]
+
     expiration_target_dates = pd.DatetimeIndex(expiration_target_dates).tolist()
 
     ushol = mcal.get_calendar("Financial_Markets_US")
-    market_open = ushol.valid_days(start_date= start_date, end_date= end_date).tz_localize(None)
+    market_open = ushol.valid_days(
+        start_date=start_date, end_date=end_date
+    ).tz_localize(None)
 
     # Convert market open dates to a set for faster lookup
     market_open_set = set(market_open)
@@ -153,19 +161,20 @@ def get_expiration_dates(start_date: str, end_date: str, expiration_months: list
     # Adjust non-trading days
     for i in range(len(expiration_target_dates)):
         current_date = expiration_target_dates[i]
-        
+
         # If the third Friday is not a trading day, shift backward
         while current_date not in market_open_set:
             print(f"Public holiday on {current_date}. Shifting back one day.")
             current_date -= pd.Timedelta(days=1)  # Move one day back
-            
+
         # Update the list with the adjusted date
         expiration_target_dates[i] = current_date
-    
+
     # returns a list of expiration dates considering the non-trading days
     return expiration_target_dates
 
-def filter_index_implied_dividend_yield(df, start_date=START_DATE, end_date=END_DATE ):
+
+def filter_index_implied_dividend_yield(df, start_date=START_DATE, end_date=END_DATE):
     """
     Filters the DataFrame to include only the first two maturities for each third Friday of March, June, September, and December.
     Replaces the days after the third Friday with the expiration date.
@@ -174,7 +183,7 @@ def filter_index_implied_dividend_yield(df, start_date=START_DATE, end_date=END_
     - df (DataFrame): DataFrame containing implied dividend yield data.
     - start_date (str): Data start date (YYYY-MM-DD)
     - end_date (str): Data end date (YYYY-MM-DD)
-    
+
     Returns:
     - DataFrame containing the filtered implied dividend yield data."""
 
@@ -182,18 +191,26 @@ def filter_index_implied_dividend_yield(df, start_date=START_DATE, end_date=END_
     # Getting all Saturdays give errors as it is not necessarilly a day after the third Friday
 
     df_ = df.copy()
-    all_third_fridays = pd.DatetimeIndex(get_expiration_dates(start_date, end_date, [3, 6, 9, 12]))
-    all_third_fridays_tom = pd.DatetimeIndex([all_third_fridays[i]+ pd.Timedelta(days=1)for i in range(len(all_third_fridays))])
-    potential_expiration_dates = list(zip(all_third_fridays_tom.date, all_third_fridays.date))
-    df_['expiration'] = df_['expiration'].replace(dict(potential_expiration_dates))
+    all_third_fridays = pd.DatetimeIndex(
+        get_expiration_dates(start_date, end_date, [3, 6, 9, 12])
+    )
+    all_third_fridays_tom = pd.DatetimeIndex(
+        [
+            all_third_fridays[i] + pd.Timedelta(days=1)
+            for i in range(len(all_third_fridays))
+        ]
+    )
+    potential_expiration_dates = list(
+        zip(all_third_fridays_tom.date, all_third_fridays.date)
+    )
+    df_["expiration"] = df_["expiration"].replace(dict(potential_expiration_dates))
 
     filtered_df = df_[df_["expiration"].isin(all_third_fridays.date)]
-    
-    # Can be improved to incorporate roll over
-    filtered_df = filtered_df.groupby('date').head(2)
-    
-    return filtered_df
 
+    # Can be improved to incorporate roll over
+    filtered_df = filtered_df.groupby("date").head(2)
+
+    return filtered_df
 
 
 def _demo():
@@ -211,15 +228,9 @@ def _demo():
         print(df_loaded.head())
 
 
-
 if __name__ == "__main__":
     INDEX_LIST = ["SPX", "DJX", "NDX"]
     for index_name in INDEX_LIST:
         df_div_yield = pull_index_implied_dividend_yield(
             index_name, start_date=START_DATE, end_date=END_DATE
         )
-    
-
-
-    
-   

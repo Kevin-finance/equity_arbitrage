@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from settings import config
 
 DATA_DIR = Path(config("DATA_DIR"))
