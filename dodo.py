@@ -148,12 +148,12 @@ def task_SF_proxy_analysis():
         "./src/compute_calendar_spread_OIS3M.py"
     ]
     targets = [
+        str(OUTPUT_DIR / "equity_index_spread_plot_full_replication.pdf"),
         str(OUTPUT_DIR / "equity_index_spread_plot_proxy_replication.pdf"),
+        str(OUTPUT_DIR / "equity_index_spread_plot_full_update.pdf"),
+        str(OUTPUT_DIR / "table_full_replication.pdf"),
         str(OUTPUT_DIR / "table_proxy_replication.pdf"),
         str(OUTPUT_DIR / "yearly_comparison.pdf"),
-        str(OUTPUT_DIR / "table_full_replication.pdf"),
-        str(OUTPUT_DIR / "equity_index_spread_plot_full_replication.pdf"),
-        str(OUTPUT_DIR / "equity_index_spread_plot_replication.pdf")
     ]
 
     return {
@@ -374,69 +374,72 @@ def task_latex_documents():
 # #     }
 
 
-# notebook_tasks = {
-#     "equity_spot_futures_arbitrage_guide.ipynb": {
-#         "file_dep": [".src/compute_calendar_spread_OIS3M.py"],
-#         "targets": [],
-#     },
-# }
+notebook_tasks = {
+    "code_snippets.ipynb": {
+        "file_dep": [],
+        "targets": [],
+    },
+    "equity_spot_futures_arbitrage_guide.ipynb": {
+        "file_dep": [],
+        "targets": [],
+    },
+}
+
+def task_convert_notebooks_to_scripts():
+    """Convert notebooks to script form to detect changes to source code rather
+    than to the notebook's metadata.
+    """
+    build_dir = Path(OUTPUT_DIR)
+
+    for notebook in notebook_tasks.keys():
+        notebook_name = notebook.split(".")[0]
+        yield {
+            "name": notebook,
+            "actions": [
+                jupyter_clear_output(notebook_name),
+                jupyter_to_python(notebook_name, build_dir),
+            ],
+            "file_dep": [Path("./src") / notebook],
+            "targets": [OUTPUT_DIR / f"_{notebook_name}.py"],
+            "clean": True,
+            "verbosity": 0,
+        }
 
 
-# def task_convert_notebooks_to_scripts():
-#     """Convert notebooks to script form to detect changes to source code rather
-#     than to the notebook's metadata.
-#     """
-#     build_dir = Path(OUTPUT_DIR)
-
-#     for notebook in notebook_tasks.keys():
-#         notebook_name = notebook.split(".")[0]
-#         yield {
-#             "name": notebook,
-#             "actions": [
-#                 jupyter_clear_output(notebook_name),
-#                 jupyter_to_python(notebook_name, build_dir),
-#             ],
-#             "file_dep": [Path("./src") / notebook],
-#             "targets": [OUTPUT_DIR / f"_{notebook_name}.py"],
-#             "clean": True,
-#             "verbosity": 0,
-#         }
-
-
-# # fmt: off
-# def task_run_notebooks():
-#     """Preps the notebooks for presentation format.
-#     Execute notebooks if the script version of it has been changed.
-#     """
-#     for notebook in notebook_tasks.keys():
-#         notebook_name = notebook.split(".")[0]
-#         yield {
-#             "name": notebook,
-#             "actions": [
-#                 """python -c "import sys; from datetime import datetime; print(f'Start """ + notebook + """: {datetime.now()}', file=sys.stderr)" """,
-#                 jupyter_execute_notebook(notebook_name),
-#                 jupyter_to_html(notebook_name),
-#                 copy_file(
-#                     Path("./src") / f"{notebook_name}.ipynb",
-#                     OUTPUT_DIR / f"{notebook_name}.ipynb",
-#                     mkdir=True,
-#                 ),
-#                 jupyter_clear_output(notebook_name),
-#                 # jupyter_to_python(notebook_name, build_dir),
-#                 """python -c "import sys; from datetime import datetime; print(f'End """ + notebook + """: {datetime.now()}', file=sys.stderr)" """,
-#             ],
-#             "file_dep": [
-#                 OUTPUT_DIR / f"_{notebook_name}.py",
-#                 *notebook_tasks[notebook]["file_dep"],
-#             ],
-#             "targets": [
-#                 OUTPUT_DIR / f"{notebook_name}.html",
-#                 OUTPUT_DIR / f"{notebook_name}.ipynb",
-#                 *notebook_tasks[notebook]["targets"],
-#             ],
-#             "clean": True,
-#         }
-# # fmt: on
+# fmt: off
+def task_run_notebooks():
+    """Preps the notebooks for presentation format.
+    Execute notebooks if the script version of it has been changed.
+    """
+    for notebook in notebook_tasks.keys():
+        notebook_name = notebook.split(".")[0]
+        yield {
+            "name": notebook,
+            "actions": [
+                """python -c "import sys; from datetime import datetime; print(f'Start """ + notebook + """: {datetime.now()}', file=sys.stderr)" """,
+                jupyter_execute_notebook(notebook_name),
+                jupyter_to_html(notebook_name),
+                copy_file(
+                    Path("./src") / f"{notebook_name}.ipynb",
+                    OUTPUT_DIR / f"{notebook_name}.ipynb",
+                    mkdir=True,
+                ),
+                jupyter_clear_output(notebook_name),
+                # jupyter_to_python(notebook_name, build_dir),
+                """python -c "import sys; from datetime import datetime; print(f'End """ + notebook + """: {datetime.now()}', file=sys.stderr)" """,
+            ],
+            "file_dep": [
+                OUTPUT_DIR / f"_{notebook_name}.py",
+                *notebook_tasks[notebook]["file_dep"],
+            ],
+            "targets": [
+                OUTPUT_DIR / f"{notebook_name}.html",
+                OUTPUT_DIR / f"{notebook_name}.ipynb",
+                *notebook_tasks[notebook]["targets"],
+            ],
+            "clean": True,
+        }
+# fmt: on
 
 
 # # ###############################################################
