@@ -7,12 +7,22 @@ OUTPUT_DIR = Path(config("OUTPUT_DIR"))
 
 latex_code = r"""
 \documentclass{article}
-\usepackage{graphicx}  % for including graphics
-\usepackage{float}     % for the [H] placement specifier
-\usepackage{caption}   % for nicer captions
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}    % for includegraphics
+\usepackage{float}       % for [H] specifier
+\usepackage{caption}     % for nicer captions
+\usepackage{adjustbox}   % for \resizebox
+
 \begin{document}
 
-\section*{Summary}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Note and Summary Section (First Page)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Note and Summary}
+\textbf{Note:}\\[0.5em]
+\textbf{Full Data:} The full data figures and tables follow the paper's methodology exactly.\\
+\textbf{Proxy Data:} The proxy data figures and tables use the index option embedded implied dividend yield.\\[1em]
+
 \subsection*{Successes}
 \begin{itemize}
     \item Automated data pulls from WRDS OptionMetrics.
@@ -35,66 +45,119 @@ latex_code = r"""
     \item WRDS OptionMetrics
 \end{itemize}
 
-\newpage
+\clearpage
 
-\section*{Equity Index Spread Plots}
-This section shows the Equity Index Spread plots.
-
-\begin{figure}[H]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Full Data Figures (Vertical Arrangement)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Equity Index Spread Figures --- Full Data}
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{equity_index_spread_plot_replication.pdf}
-    \caption{Equity Index Spread - Replication}
-    \label{fig:spread_full}
+    \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{equity_index_spread_plot_full_update.pdf}
+    \caption{Equity Index Spread --- Full Update (Data until 2023-12-28)}
+    \label{fig:full_update}
 \end{figure}
 
-\begin{figure}[H]
+\vspace{1em}
+
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{equity_index_spread_plot_full_replication.pdf}
-    \caption{Equity Index Spread - Full Replication up to 2024}
-    \label{fig:spread_full}
+    \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{equity_index_spread_plot_full_replication.pdf}
+    \caption{Equity Index Spread --- Full Replication (Data until 2021-02-28)}
+    \label{fig:full_replication}
 \end{figure}
 
+\clearpage
 
-
-\begin{figure}[H]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Proxy Data Figures (Vertical Arrangement)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Equity Index Spread Figures --- Proxy Data}
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{equity_index_spread_plot_proxy_replication.pdf}
-    \caption{Equity Index Spread - Proxy Replication}
-    \label{fig:spread_proxy}
+    \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{equity_index_spread_plot_proxy_update.pdf}
+    \caption{Equity Index Spread --- Proxy Update (Data until 2024-08-31)}
+    \label{fig:proxy_update}
 \end{figure}
 
-\newpage
+\vspace{1em}
 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{equity_index_spread_plot_proxy_replication.pdf}
+    \caption{Equity Index Spread --- Proxy Replication (Data until 2021-02-28)}
+    \label{fig:proxy_replication}
+\end{figure}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Yearly Comparison Figure
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Yearly Comparison of Time Series Data}
-This figure compares the yearly evolution of the spread.
-
-\begin{figure}[H]
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{yearly_comparison.pdf}
-    \caption{Yearly Comparison of Time Series Data}
+    \includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{yearly_comparison.pdf}
+    \caption{Yearly Comparison of Time Series Data. In general, the difference between the implied forward rate before and after maturity, as well as the difference among the forward rates embedded in different maturities, increases.}
     \label{fig:yearly}
 \end{figure}
 
-\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Full Data Tables (Vertical Arrangement; Two Tables in One Figure)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!ht]
+  \centering
 
-\section*{Summary Statistics Tables}
-This section shows the summary statistics tables.
-
-\begin{figure}[H]
+  % 첫 번째 테이블
+  \begin{minipage}{\textwidth}
     \centering
-    \includegraphics[width=0.8\textwidth]{table_full_replication.pdf}
-    \caption{Summary statistics table - Full Replication}
-    \label{fig:table_full}
+    \resizebox{0.9\textwidth}{!}{\includegraphics{table_full_update.pdf}}
+    \caption{Summary Statistics Table --- Full Update (Data until 2023-12-28)}
+    \label{tab:full_update}
+  \end{minipage}
+  
+  \vspace{1em}  % 두 테이블 사이 간격
+  
+  % 두 번째 테이블
+  \begin{minipage}{\textwidth}
+    \centering
+    \resizebox{0.9\textwidth}{!}{\includegraphics{table_full_replication.pdf}}
+    \caption{Summary Statistics Table --- Full Replication (Data until 2021-02-28)}
+    \label{tab:full_replication}
+  \end{minipage}
 \end{figure}
 
-\begin{figure}[H]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Proxy Data Tables (Vertical Arrangement; Two Tables in One Figure)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!ht]
+  \centering
+
+  % 첫 번째 테이블
+  \begin{minipage}{\textwidth}
     \centering
-    \includegraphics[width=0.8\textwidth]{table_proxy_replication.pdf}
-    \caption{Summary statistics table - Proxy Replication}
-    \label{fig:table_proxy}
+    \resizebox{0.9\textwidth}{!}{\includegraphics{table_proxy_update.pdf}}
+    \caption{Summary Statistics Table --- Proxy Update (Data until 2024-08-31)}
+    \label{tab:proxy_update}
+  \end{minipage}
+  
+  \vspace{1em}  % 두 테이블 사이 간격
+  
+  % 두 번째 테이블
+  \begin{minipage}{\textwidth}
+    \centering
+    \resizebox{0.9\textwidth}{!}{\includegraphics{table_proxy_replication.pdf}}
+    \caption{Summary Statistics Table --- Proxy Replication (Data until 2021-02-28)}
+    \label{tab:proxy_replication}
+  \end{minipage}
+
 \end{figure}
 
 \end{document}
+
+
+
+
 """
 
 # Check if the output directory exists

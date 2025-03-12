@@ -10,7 +10,7 @@ from settings import config
 import matplotlib
 print(matplotlib.get_backend())
 OUTPUT_DIR = config("OUTPUT_DIR")
-
+repl_end = datetime(2021,2,28).date()
 
 # Dynamically set project root using sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -246,8 +246,25 @@ ax.axis('off')
 
 table = ax.table(cellText=data, colLabels=col_labels, rowLabels=row_labels, loc='center')
 
+plt.savefig(f'{OUTPUT_DIR}/table_full_update.pdf')
+merged_df.index = pd.to_datetime(merged_df.index)
+
+merged_df = merged_df.dropna(subset=["SPX_arb_spread", "NDX_arb_spread", "DJI_arb_spread"])
+merged_df = merged_df.loc[:repl_end]
+desc = merged_df.filter(items =["SPX_arb_spread", "NDX_arb_spread", "DJI_arb_spread"]).describe()
+data = desc.values.tolist()  
+col_labels = list(desc.columns)
+row_labels = list(desc.index)
+
+fig, ax = plt.subplots()
+ax.axis('tight')
+ax.axis('off')
+
+table = ax.table(cellText=data, colLabels=col_labels, rowLabels=row_labels, loc='center')
+
 plt.savefig(f'{OUTPUT_DIR}/table_full_replication.pdf')
 merged_df.index = pd.to_datetime(merged_df.index)
+
 
 # =============================================================================
 # 9. Plot the Arbitrage Spreads for All Indexes from 2000 to 2024 to get up-to-date spread & 2000 to 2021 for the replication
@@ -275,7 +292,7 @@ plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_full_replication.pdf')
+plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_full_update.pdf')
 
 
 merged_df.to_parquet(OUTPUT_DIR / "calendar_spread_df.parquet", engine="pyarrow")
@@ -301,7 +318,7 @@ plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_replication.pdf')
+plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_full_replication.pdf')
 
 
 

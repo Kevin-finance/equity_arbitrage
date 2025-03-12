@@ -22,8 +22,8 @@ import pandas as pd
 
 # Set the path to the Bloomberg historical data file
 root_path = os.getcwd()
-data_path = os.path.join(root_path, 'data_manual', 'bloomberg_historical_data.parquet')
-
+# data_path = os.path.join(root_path, 'data_manual', 'bloomberg_historical_data.parquet')
+data_path = "../data_manual/bloomberg_historical_data.parquet"
 df_raw = pd.read_parquet(data_path)
 
 # Retrieve configuration parameters: start date, end date, and output directory
@@ -35,7 +35,7 @@ OUTPUT_DIR = config("OUTPUT_DIR")
 # ensuring there is enough data before the expiration date.
 start_date = datetime.strftime(config("START_DATE").date() - relativedelta(years=1), format="%Y-%m-%d")
 end_date = datetime.strftime(config("END_DATE"), format="%Y-%m-%d")
-
+repl_end = datetime(2021,2,28).date()
 # ------------------------------------------------------------------------------
 # 2. Define Expiration Dates and Index Pairs
 # ------------------------------------------------------------------------------
@@ -213,6 +213,23 @@ data = desc.values.tolist()
 col_labels = list(desc.columns)
 row_labels = list(desc.index)
 
+
+fig, ax = plt.subplots()
+ax.axis('tight')
+ax.axis('off')
+
+table = ax.table(cellText=data, colLabels=col_labels, rowLabels=row_labels, loc='center')
+
+plt.savefig(f'{OUTPUT_DIR}/table_proxy_update.pdf')
+
+total_df_repl = total_df.loc[START_DATE.date():repl_end]
+
+desc = total_df_repl.filter(items= ['SPX_Spread', 'NDX_Spread','INDU_Spread']).describe()
+data = desc.values.tolist()  
+col_labels = list(desc.columns)
+row_labels = list(desc.index)
+
+
 fig, ax = plt.subplots()
 ax.axis('tight')
 ax.axis('off')
@@ -220,7 +237,6 @@ ax.axis('off')
 table = ax.table(cellText=data, colLabels=col_labels, rowLabels=row_labels, loc='center')
 
 plt.savefig(f'{OUTPUT_DIR}/table_proxy_replication.pdf')
-
 # ------------------------------------------------------------------------------
 # 8. Plotting the Equity Index Spread
 # ------------------------------------------------------------------------------
@@ -236,13 +252,28 @@ plt.xlabel('Date')
 plt.ylabel('Spread (bps)')
 plt.legend()
 plt.grid(True)
+plt.xlim(START_DATE.date(),repl_end)
 # Draw a horizontal red dashed line at 0 for reference
 plt.hlines(0, total_df.index[0], total_df.index[-1], 'r', linestyles='--', linewidth=1)
 plt.ylim(-50, 150)
 # Save the plot to a PDF file
 plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_proxy_replication.pdf')
-plt.show()
 
+plt.figure(figsize=(12, 6))
+plt.plot(total_df.index, total_df['SPX_Spread'], label='SPX Spread', linestyle='--', markersize=0.5)
+plt.plot(total_df.index, total_df['NDX_Spread'], label='NDX Spread', linestyle='--', markersize=0.5)
+plt.plot(total_df.index, total_df['INDU_Spread'], label='INDU Spread', linestyle='--', markersize=0.5)
+
+plt.title('Equity Index Spread (After Anomaly Removal)')
+plt.xlabel('Date')
+plt.ylabel('Spread (bps)')
+plt.legend()
+plt.grid(True)
+# Draw a horizontal red dashed line at 0 for reference
+plt.hlines(0, total_df.index[0], total_df.index[-1], 'r', linestyles='--', linewidth=1)
+plt.ylim(-50, 150)
+# Save the plot to a PDF file
+plt.savefig(f'{OUTPUT_DIR}/equity_index_spread_plot_proxy_update.pdf')
 # ------------------------------------------------------------------------------
 # 9. Yearly Comparison Plot of the Time Series Data
 # ------------------------------------------------------------------------------
@@ -276,4 +307,4 @@ ax.set_ylim(-1, 1)
 plt.grid(True, linestyle='--', alpha=0.5)
 # Save the yearly comparison plot as a PDF file
 plt.savefig(f'{OUTPUT_DIR}/yearly_comparison.pdf')
-plt.show()
+
