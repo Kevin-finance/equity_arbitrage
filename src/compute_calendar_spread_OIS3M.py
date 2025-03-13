@@ -337,8 +337,9 @@ merged_df.index = pd.to_datetime(merged_df.index)
 merged_df = merged_df.dropna(
     subset=["SPX_arb_spread", "NDX_arb_spread", "DJI_arb_spread"]
 )
-merged_df = merged_df.loc[:repl_end]
-desc = merged_df.filter(
+merged_df_repl = merged_df.loc[:repl_end]
+
+desc = merged_df_repl.filter(
     items=["SPX_arb_spread", "NDX_arb_spread", "DJI_arb_spread"]
 ).describe()
 data = desc.values.tolist()
@@ -423,7 +424,7 @@ plt.plot(
     linewidth=1,
 )
 plt.xlabel("Dates", fontsize=14)
-plt.xlim([datetime(2009, 11, 1), datetime(2021, 3, 1)])
+plt.xlim([datetime(2009, 11, 1), datetime(2020, 3, 1)])
 plt.ylim([-60, 150])
 plt.yticks(np.arange(-50, 151, 50))
 plt.gca().yaxis.set_tick_params(rotation=90, labelsize=12)

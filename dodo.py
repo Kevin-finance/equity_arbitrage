@@ -225,12 +225,7 @@ def task_latex_documents():
 #         "clean": [],
 #     }
 
-# # equity_spot 돌리면, save fig되고 그에따라서 latex 파일 만들수있음
-# # 이거를 다시 pdf로 만들라는 얘기인듯.
-# ############################## 
-# # 1. Pull request
-# # 2. statistics in all table in the latex document automatically generated from the code? 
-# ##############################
+
 
 
 

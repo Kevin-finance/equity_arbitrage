@@ -1,9 +1,50 @@
-Example Project Using the ChartBook Template
+Project Overview
 =============================================
 
-## About this project
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+# Replicating Equity Spot-Futures Arbitrage Spreads
+
+## Overview
+
+This project replicates the equity spot-futures arbitrage spreads analyzed in the paper *Segmented Arbitrage* by Emil Siriwardane, Adi Sunderam, and Jonathan Wallen ([Paper](https://www.hbs.edu/ris/Publication%20Files/24-030_1506d32b-3190-4144-8c75-a2326b87f81e.pdf), [Appendix](https://www.emilsiriwardane.com/s/Appendix.pdf)). Specifically, this project focuses on **Panel 11: Equity Spot-Futures Arbitrage** from Figure A1 in the Appendix.
+
+The goal is to **fully automate the data retrieval, processing, and visualization** of arbitrage spreads using Python, following best practices for **Reproducible Analytical Pipelines (RAPs)**. This project adheres to the [Cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/) project structure.
+
+## Background
+
+The *Segmented Arbitrage* paper investigates deviations from no-arbitrage conditions and their implications for asset pricing models. This project aims to:
+
+- Reproduce the **arbitrage-implied forward rates** constructed from the **nearby and first deferred futures contracts** for the **S&P 500, Dow Jones, and Nasdaq 100 indices**.
+- Extend the time series to the **present day** by automating data pulls (where possible).
+- Convert Stata-based methodologies from the authors’ original code ([esiriwardane/arbitrage-spreads-public](https://github.com/esiriwardane/arbitrage-spreads-public)) into **Python**.
+- Use **Optionmetrics as an alternative** for Bloomberg data where applicable.
+
+## Data Sources
+
+- **Bloomberg** (Primary)
+- **OptionMetrics** (Alternative, where applicable)
+- Publicly available data from [esiriwardane/arbitrage-spreads-public](https://github.com/esiriwardane/arbitrage-spreads-public)
+
+## Tasks
+
+1. **Replicate the Arbitrage Spread Series:**  
+   - Compute the arbitrage-implied forward rates using the methodology described in the paper.
+   - Ensure consistency with the original results from Figure A1, Panel 11.
+
+2. **Automate Data Updates:**  
+   - Extend the time series to include recent data.
+   - Where possible, automate Bloomberg/OptionMetrics data pulls.
+
+3. **Ensure Reproducibility:**  
+   - Use **Python** instead of Stata.
+   - Follow a structured and modularized approach based on **Cookiecutter Data Science**.
+   - Provide a clear **pipeline** for running the analysis end-to-end.
+
+## References
+
+- *Segmented Arbitrage* ([Paper](https://www.hbs.edu/ris/Publication%20Files/24-030_1506d32b-3190-4144-8c75-a2326b87f81e.pdf), [Appendix](https://www.emilsiriwardane.com/s/Appendix.pdf))
+- Original Codebase: [esiriwardane/arbitrage-spreads-public](https://github.com/esiriwardane/arbitrage-spreads-public)
+- Related Replication Attempt: [jmbejara/arb_spreads](https://github.com/jmbejara/arb_spreads)
 
 ## Quick Start
 
@@ -23,6 +64,13 @@ conda activate blank
 and then install the dependencies with pip
 ```
 pip install -r requirements.txt
+```
+and then create an .env file with following lines and replace "YOUR_WRDS_USERNAME" here with your personal username
+
+```
+WRDS_USERNAME="YOUR_WRDS_USERNAME"
+START_DATE="2010-01-01"
+END_DATE="2024-12-31"
 ```
 Finally, you can then run 
 ```
@@ -125,10 +173,10 @@ loading by importing `config`.
 ### Naming Conventions
 
  - **`pull_` vs `load_`**: Files or functions that pull data from an external
- data source are prepended with "pull_", as in "pull_fred.py". Functions that
+ data source are prepended with "pull_", as in "pull_optionm_api_data.py". Functions that
  load data that has been cached in the "_data" folder are prepended with "load_".
- For example, inside of the `pull_CRSP_Compustat.py` file there is both a
- `pull_compustat` function and a `load_compustat` function. The first pulls from
+ For example, inside of the `pull_optionm_api_data.py` file there is both a
+ `pull_index_implied_dividend_yield` function and a `load_index_implied_dividend_yield` function. The first pulls from
  the web, whereas the other loads cached data from the "_data" directory.
 
 
