@@ -204,7 +204,9 @@ The project follows a structured pipeline to ensure reproducibility:
 \begin{itemize}
     \item \textbf{Data Access and Cleaning}: Bloomberg data is proprietary, requiring alternative \textbf{proxy estimates using OptionMetrics}.
     \item \textbf{Methodological Challenges}: Matching results exactly was difficult due to minor methodological differences in data sources.
-    \item \textbf{Interpretation of Arbitrage Spreads}: Regulatory constraints and funding limitations may explain deviations.
+    \item \textbf{WRDS OptionMetrics Table Issue}: We encountered an issue with the WRDS OptionMetrics table where the results obtained from a web query differed from those extracted using SQL. We contacted the help desk via \href{https://wrds-support.wharton.upenn.edu/hc/en-us/requests/new?ticket_form_id=114093978532}{this link} and received SAS code, which we later converted into Python SQL.
+    \item \textbf{Data Processing Challenges}: In data processing, challenges arose due to null values and duplicate entries, and although we generated plots, we were not completely sure if any unexpected data errors remained. For example, before 2017, the expiration date for index options was set as the day following the actual expiration.
+    \item \textbf{Collaboration Issues}: Collaboration was further complicated by differences in code behavior between MacOS and Windows. Additionally, GitHub Actions runs on MacOS, which led to build failures because some libraries only operate on Windows.
 \end{itemize}
 
 

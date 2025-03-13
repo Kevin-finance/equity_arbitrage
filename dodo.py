@@ -33,7 +33,9 @@ try:
 except:
     in_slurm = False
 
+OS_TYPE = config("OS_TYPE")
 
+print(OS_TYPE)
 class GreenReporter(ConsoleReporter):
     def write(self, stuff, **kwargs):
         doit_mark = stuff.split(" ")[0].ljust(2)
@@ -184,17 +186,22 @@ def task_latex_documents():
         "./src/compute_calendar_spread_OIS3M.py",
         "./src/pandas_to_latex.py"
     ]
-
+    
+    # Determine the TXT conversion command based on OS type
+    if "OS_TYPE" == "windows":
+        txt_conversion_cmd = f"type {TEX_FILE} > {TXT_FILE}"
+    else:
+        txt_conversion_cmd = f"cat {TEX_FILE} > {TXT_FILE}"
+    
     return {
         "actions": [
             "ipython ./src/pandas_to_latex.py",  # Generate LaTeX file
             f"pdflatex -interaction=nonstopmode -shell-escape -output-directory={OUTPUT_DIR} {TEX_FILE}",  # Compile to PDF
-            f"type {TEX_FILE} > {TXT_FILE}"  # Convert to TXT / Works for windows
+            txt_conversion_cmd  # Convert to TXT using OS-specific command
         ],
         "targets": [str(TEX_FILE), str(PDF_FILE), str(TXT_FILE)],
         "file_dep": file_dep,
         "clean": [f"del {TEX_FILE}", f"del {PDF_FILE}", f"del {TXT_FILE}"],
-        
     }
 
 
